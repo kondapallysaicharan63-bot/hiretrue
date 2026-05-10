@@ -45,7 +45,7 @@ export default defineConfig({
     exclude: ["e2e/**", "node_modules/**"],
     server: {
       deps: {
-        inline: [/@prisma/, /next-auth/, /@auth/, /@next/, /jose/],
+        inline: [/@prisma/, /next-auth/, /@auth/, /@next/, /jose/, /drizzle-orm/, /@neondatabase/],
       },
     },
   },

@@ -2,7 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { authenticate } from "@/actions/auth.actions";
+import { hireTrueAuthenticate as authenticate } from "@/actions/hiretrue-auth.actions";
 import {
   Form,
   FormControl,

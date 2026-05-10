@@ -13,10 +13,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | JobSync",
-    default: "JobSync",
+    template: "%s | HireTrue",
+    default: "HireTrue — Job Search for Students",
   },
-  description: "Job Application Tracking System",
+  description: "AI-powered job search for international students. Find H1B sponsors, tailor your resume, and track applications.",
 };
 
 interface Props {

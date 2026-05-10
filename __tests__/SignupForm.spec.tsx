@@ -1,12 +1,11 @@
-import { signup, authenticate } from "@/actions/auth.actions";
+import { hireTrueSignup, hireTrueAuthenticate } from "@/actions/hiretrue-auth.actions";
 import SignupForm from "@/components/auth/SignupForm";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 
-// Mock the external dependencies
-vi.mock("@/actions/auth.actions", () => ({
-  signup: vi.fn(),
-  authenticate: vi.fn(),
+vi.mock("@/actions/hiretrue-auth.actions", () => ({
+  hireTrueSignup: vi.fn(),
+  hireTrueAuthenticate: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -30,8 +29,12 @@ describe("SignupForm Component", () => {
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /create an account/i }),
+      screen.getByRole("button", { name: /create account/i })
     ).toBeInTheDocument();
+  });
+
+  it("shows visa status field", () => {
+    expect(screen.getByText("Visa / Work Authorization")).toBeInTheDocument();
   });
 
   it("should display invalid name error when name is too short", async () => {
@@ -39,11 +42,11 @@ describe("SignupForm Component", () => {
       target: { value: "A" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /create an account/i }));
+    fireEvent.click(screen.getByRole("button", { name: /create account/i }));
 
     await waitFor(() => {
       expect(
-        screen.getByText("Name must be at least 2 characters."),
+        screen.getByText("Name must be at least 2 characters.")
       ).toBeInTheDocument();
     });
   });
@@ -56,11 +59,11 @@ describe("SignupForm Component", () => {
       target: { value: "invalid-email" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /create an account/i }));
+    fireEvent.click(screen.getByRole("button", { name: /create account/i }));
 
     await waitFor(() => {
       expect(
-        screen.getByText("Please enter a valid email."),
+        screen.getByText("Please enter a valid email.")
       ).toBeInTheDocument();
     });
   });
@@ -73,11 +76,11 @@ describe("SignupForm Component", () => {
       target: { value: "a@" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /create an account/i }));
+    fireEvent.click(screen.getByRole("button", { name: /create account/i }));
 
     await waitFor(() => {
       expect(
-        screen.getByText("Email must be at least 3 characters."),
+        screen.getByText("Email must be at least 3 characters.")
       ).toBeInTheDocument();
     });
   });
@@ -93,18 +96,18 @@ describe("SignupForm Component", () => {
       target: { value: "short" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /create an account/i }));
+    fireEvent.click(screen.getByRole("button", { name: /create account/i }));
 
     await waitFor(() => {
       expect(
-        screen.getByText("Password must be at least 6 characters."),
+        screen.getByText("Password must be at least 6 characters.")
       ).toBeInTheDocument();
     });
   });
 
   it("should display error message when signup fails", async () => {
     const errorMessage = "An account with this email already exists.";
-    (signup as any).mockResolvedValueOnce({ error: errorMessage });
+    (hireTrueSignup as any).mockResolvedValueOnce({ error: errorMessage });
 
     fireEvent.change(screen.getByLabelText("Full Name"), {
       target: { value: "John Doe" },
@@ -116,23 +119,25 @@ describe("SignupForm Component", () => {
       target: { value: "password123" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /create an account/i }));
+    fireEvent.click(screen.getByRole("button", { name: /create account/i }));
 
     await waitFor(() => {
       expect(screen.getByText(errorMessage)).toBeInTheDocument();
     });
-    expect(signup).toHaveBeenCalledWith({
-      name: "John Doe",
-      email: "john@example.com",
-      password: "password123",
-    });
-    expect(authenticate).not.toHaveBeenCalled();
+    expect(hireTrueSignup).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "John Doe",
+        email: "john@example.com",
+        password: "password123",
+      })
+    );
+    expect(hireTrueAuthenticate).not.toHaveBeenCalled();
   });
 
   it("should display error message when authentication fails after signup", async () => {
     const authError = "Something went wrong.";
-    (signup as any).mockResolvedValueOnce({ success: true });
-    (authenticate as any).mockResolvedValueOnce(authError);
+    (hireTrueSignup as any).mockResolvedValueOnce({ success: true });
+    (hireTrueAuthenticate as any).mockResolvedValueOnce(authError);
 
     fireEvent.change(screen.getByLabelText("Full Name"), {
       target: { value: "John Doe" },
@@ -144,23 +149,25 @@ describe("SignupForm Component", () => {
       target: { value: "password123" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /create an account/i }));
+    fireEvent.click(screen.getByRole("button", { name: /create account/i }));
 
     await waitFor(() => {
       expect(screen.getByText(authError)).toBeInTheDocument();
     });
-    expect(signup).toHaveBeenCalledWith({
-      name: "John Doe",
-      email: "john@example.com",
-      password: "password123",
-    });
-    expect(authenticate).toHaveBeenCalledWith("", expect.any(FormData));
+    expect(hireTrueSignup).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "John Doe",
+        email: "john@example.com",
+        password: "password123",
+      })
+    );
+    expect(hireTrueAuthenticate).toHaveBeenCalledWith("", expect.any(FormData));
     expect(mockPush).not.toHaveBeenCalled();
   });
 
   it("submits the form successfully and redirects to dashboard", async () => {
-    (signup as any).mockResolvedValueOnce({ success: true });
-    (authenticate as any).mockResolvedValueOnce(null);
+    (hireTrueSignup as any).mockResolvedValueOnce({ success: true });
+    (hireTrueAuthenticate as any).mockResolvedValueOnce(null);
 
     fireEvent.change(screen.getByLabelText("Full Name"), {
       target: { value: "John Doe" },
@@ -172,15 +179,17 @@ describe("SignupForm Component", () => {
       target: { value: "password123" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /create an account/i }));
+    fireEvent.click(screen.getByRole("button", { name: /create account/i }));
 
     await waitFor(() => {
-      expect(signup).toHaveBeenCalledWith({
-        name: "John Doe",
-        email: "john@example.com",
-        password: "password123",
-      });
-      expect(authenticate).toHaveBeenCalledWith("", expect.any(FormData));
+      expect(hireTrueSignup).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: "John Doe",
+          email: "john@example.com",
+          password: "password123",
+        })
+      );
+      expect(hireTrueAuthenticate).toHaveBeenCalledWith("", expect.any(FormData));
       expect(mockPush).toHaveBeenCalledWith("/dashboard");
     });
   });

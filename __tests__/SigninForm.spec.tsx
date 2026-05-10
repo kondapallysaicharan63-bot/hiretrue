@@ -1,11 +1,10 @@
-import { authenticate } from "@/actions/auth.actions";
+import { hireTrueAuthenticate } from "@/actions/hiretrue-auth.actions";
 import SigninForm from "@/components/auth/SigninForm";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 
-// Mock the external dependencies
-vi.mock("@/actions/auth.actions", () => ({
-  authenticate: vi.fn(),
+vi.mock("@/actions/hiretrue-auth.actions", () => ({
+  hireTrueAuthenticate: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -56,11 +55,11 @@ describe("SigninForm Component", () => {
         screen.getByText("Email must be at least 3 characters.")
       ).toBeInTheDocument();
     });
-    expect(authenticate).not.toHaveBeenCalled();
+    expect(hireTrueAuthenticate).not.toHaveBeenCalled();
   });
 
   it("submits the form successfully", async () => {
-    (authenticate as any).mockResolvedValueOnce(null);
+    (hireTrueAuthenticate as any).mockResolvedValueOnce(null);
 
     fireEvent.change(screen.getByLabelText("Email"), {
       target: { value: "admin@example.com" },
@@ -72,14 +71,14 @@ describe("SigninForm Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /login/i }));
 
     await waitFor(() => {
-      expect(authenticate).toHaveBeenCalledWith("", expect.any(FormData));
+      expect(hireTrueAuthenticate).toHaveBeenCalledWith("", expect.any(FormData));
       expect(mockPush).toHaveBeenCalledWith("/dashboard");
     });
   });
 
   it("shows an error message on failed submit", async () => {
     const errorMessage = "Invalid credentials";
-    (authenticate as any).mockResolvedValueOnce(errorMessage);
+    (hireTrueAuthenticate as any).mockResolvedValueOnce(errorMessage);
 
     fireEvent.change(screen.getByLabelText("Email"), {
       target: { value: "admin@example.com" },
@@ -91,7 +90,7 @@ describe("SigninForm Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /login/i }));
 
     await waitFor(() => {
-      expect(authenticate).toHaveBeenCalledWith("", expect.any(FormData));
+      expect(hireTrueAuthenticate).toHaveBeenCalledWith("", expect.any(FormData));
       expect(screen.getByText(errorMessage)).toBeInTheDocument();
     });
   });

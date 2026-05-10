@@ -6,6 +6,7 @@ declare module "next-auth" {
       id: string;
       name?: string | null;
       email?: string | null;
+      visa_status?: string | null;
     };
   }
 }
@@ -15,16 +16,25 @@ export const authConfig = {
     signIn: "/signin",
     error: "/signin",
   },
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
+      const protectedPaths = [
+        "/dashboard",
+        "/jobs",
+        "/resume",
+        "/tracker",
+        "/profile",
+      ];
+      const isProtected = protectedPaths.some((p) =>
+        nextUrl.pathname.startsWith(p)
+      );
       const isApiRoute = nextUrl.pathname.startsWith("/api");
 
-      if (isOnDashboard || isApiRoute) {
+      if (isProtected || isApiRoute) {
         return isLoggedIn;
-      } else if (isLoggedIn) {
+      } else if (isLoggedIn && (nextUrl.pathname === "/signin" || nextUrl.pathname === "/signup")) {
         return Response.redirect(new URL("/dashboard", nextUrl));
       }
       return true;
