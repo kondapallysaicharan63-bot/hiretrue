@@ -1,18 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-
-const prismaClientSingleton = () => {
-  return new PrismaClient();
-  //   {
-  //   log: ["query"],
-  // }
-};
-
-declare const globalThis: {
-  prismaGlobal: ReturnType<typeof prismaClientSingleton>;
-} & typeof global;
-
-const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
-
-export default prisma;
-
-if (process.env.NODE_ENV !== "production") globalThis.prismaGlobal = prisma;
+// Prisma removed — use @/lib/neondb (Drizzle + Neon) for all database access
+// This stub exists so old imports don't crash at module load time.
+// Any code that calls methods on this will fail at runtime — migrate to @/lib/neondb.
+const db = null as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+export default db;
