@@ -1,3 +1,4 @@
+// @ts-expect-error pdf-parse v2 ESM typedefs lack a default export; works at runtime via esModuleInterop
 import pdf from 'pdf-parse';
 
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
@@ -9,10 +10,8 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   }
 }
 
-export async function extractSkillsFromText(
-  resumeText: string,
-  claudeClient: { messages: { create: (opts: object) => Promise<{ content: Array<{ type: string; text: string }> }> } }
-): Promise<string[]> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function extractSkillsFromText(resumeText: string, claudeClient: any): Promise<string[]> {
   try {
     const response = await claudeClient.messages.create({
       model: 'claude-haiku-4-5',
