@@ -35,7 +35,7 @@ export const authConfig = {
       if (isProtected || isApiRoute) {
         return isLoggedIn;
       } else if (isLoggedIn && (nextUrl.pathname === "/signin" || nextUrl.pathname === "/signup")) {
-        return Response.redirect(new URL("/dashboard", nextUrl));
+        return Response.redirect(new URL("/jobs", nextUrl));
       }
       return true;
     },

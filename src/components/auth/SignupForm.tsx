@@ -58,7 +58,7 @@ function SignupForm() {
       if (authError) {
         setError(authError);
       } else {
-        router.push("/dashboard");
+        router.push("/jobs");
       }
     });
   };

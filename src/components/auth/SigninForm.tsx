@@ -45,7 +45,7 @@ function SigninForm() {
       if (errorResponse) {
         setError(errorResponse);
       } else {
-        router.push("/dashboard");
+        router.push("/jobs");
       }
     });
   };
